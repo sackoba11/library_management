@@ -107,11 +107,11 @@ class LibraryBook(models.Model):
     )
     
     # Relation vers les emprunts (définie ici pour référence)
-    loan_ids = fields.One2many(
-        comodel_name='library.loan',
-        inverse_name='book_id',
-        string='Emprunts',
-    )
+    # loan_ids = fields.One2many(
+    #     comodel_name='library.loan',
+    #     inverse_name='book_id',
+    #     string='Emprunts',
+    # )
     
     # ============================================================
     # CONTRAINTES SQL
@@ -128,15 +128,19 @@ class LibraryBook(models.Model):
     # MÉTHODES CALCULÉES
     # ============================================================
     
-    @api.depends('loan_ids', 'loan_ids.state', 'total_copies')
+    # @api.depends('loan_ids', 'loan_ids.state', 'total_copies')
+    @api.depends('total_copies')
     def _compute_copies(self):
         for book in self:
             # Compter les emprunts actifs (statut = 'borrowed')
-            borrowed = len(book.loan_ids.filtered(
-                lambda l: l.state == 'borrowed'
-            ))
-            book.borrowed_copies = borrowed
-            book.available_copies = book.total_copies - borrowed
+            # borrowed = len(book.loan_ids.filtered(
+            #     lambda l: l.state == 'borrowed'
+            # ))
+            # book.borrowed_copies = borrowed
+            # book.available_copies = book.total_copies - borrowed
+            # book.is_available = book.available_copies > 0
+            book.borrowed_copies = book.total_copies
+            book.available_copies = book.total_copies
             book.is_available = book.available_copies > 0
     
     # ============================================================
