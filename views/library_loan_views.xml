@@ -1,4 +1,3 @@
-<!-- library_management/views/library_loan_views.xml -->
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
@@ -60,10 +59,10 @@
                             invisible="state not in ('borrowed', 'overdue')"/>
 
                     <!-- Bouton Renouveler : visible si emprunté -->
-                    <button string="Renouveler"
+                    <!-- <button string="Renouveler"
                             name="action_renew_wizard"
                             type="object"
-                            invisible="state != 'borrowed'"/>
+                            invisible="state != 'borrowed'"/> -->
 
                     <!-- Bouton Annuler -->
                     <button string="Annuler"

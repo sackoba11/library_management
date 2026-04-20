@@ -36,10 +36,10 @@
 
         # Views
         'views/library_category_views.xml',
-        'views/library_author_views.xml',
-        'views/library_book_views.xml',
-        'views/library_member_views.xml',
         'views/library_loan_views.xml',
+        'views/library_book_views.xml',
+        'views/library_author_views.xml',
+        'views/library_member_views.xml',
         'views/library_menus.xml',
 
         # Wizard

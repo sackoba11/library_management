@@ -1,4 +1,3 @@
-<!-- library_management/views/library_member_views.xml -->
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
@@ -50,8 +49,8 @@
                         name="%(library_loan_action)d"
                         icon="fa-book"
                         invisible="not is_library_member"
-                        context="{'default_member_id': active_id,
-                                  'search_default_member_id': active_id}">
+                        context="{'default_member_id': id,
+                                  'search_default_member_id': id}">
                     <div class="o_stat_info">
                         <field name="active_loan_count"
                                class="o_stat_value"/>
@@ -61,7 +60,7 @@
             </div>
 
             <!-- On ajoute un onglet "Bibliothèque" après le dernier onglet -->
-            <page name="sale_purchase" position="after">
+            <!-- <page name="sale_purchase" position="after">
                 <page string="Bibliothèque"
                       invisible="not is_library_member">
                     <group>
@@ -104,7 +103,53 @@
                         </field>
                     </group>
                 </page>
-            </page>
+            </page> -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Bibliothèque"
+                    invisible="not is_library_member">
+
+                    <group>
+                        <group string="Adhésion">
+                            <field name="is_library_member" widget="boolean_toggle"/>
+                            <field name="member_number" readonly="1"/>
+                            <field name="membership_state"
+                                widget="badge"
+                                decoration-success="membership_state == 'active'"
+                                decoration-warning="membership_state == 'expired'"
+                                decoration-danger="membership_state == 'suspended'"/>
+                            <field name="membership_start"/>
+                            <field name="membership_expiry"/>
+                            <field name="max_loans"/>
+                        </group>
+
+                        <group string="Statistiques">
+                            <field name="active_loan_count" readonly="1"/>
+                            <field name="total_loan_count" readonly="1"/>
+                            <field name="overdue_loan_count" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Notes">
+                        <field name="member_notes" nolabel="1"/>
+                    </group>
+
+                    <group string="Historique des emprunts">
+                        <field name="loan_ids" nolabel="1">
+                            <list>
+                                <field name="name"/>
+                                <field name="book_id"/>
+                                <field name="loan_date"/>
+                                <field name="expected_return_date"/>
+                                <field name="state" widget="badge"
+                                    decoration-success="state == 'returned'"
+                                    decoration-warning="state == 'overdue'"
+                                    decoration-info="state == 'borrowed'"/>
+                            </list>
+                        </field>
+                    </group>
+
+                </page>
+            </xpath>
         </field>
     </record>
 

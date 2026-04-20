@@ -42,7 +42,7 @@
                                 type="action"
                                 name="%(library_loan_action)d"
                                 icon="fa-list-alt"
-                                context="{'default_book_id': active_id}">
+                                context="{'default_book_id': id}">
                             <field name="loan_ids"
                                    widget="statinfo"
                                    string="Emprunt(s)"/>
