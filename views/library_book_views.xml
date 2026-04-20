@@ -1,3 +1,237 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
+    <!-- ======================================================= -->
+    <!-- VUE LIST                                                  -->
+    <!-- ======================================================= -->
+    <record id="library_book_view_list" model="ir.ui.view">
+        <field name="name">library.book.list</field>
+        <field name="model">library.book</field>
+        <field name="arch" type="xml">
+            <list string="Livres"
+                  decoration-danger="not is_available"
+                  decoration-success="is_available">
+                <!-- decoration-* : colorise les lignes selon une condition -->
+
+                <field name="title"/>
+                <field name="author_id"/>
+                <field name="category_id"/>
+                <field name="language"/>
+                <field name="total_copies"/>
+                <field name="available_copies"/>
+                <field name="is_available"
+                       widget="boolean_toggle"
+                       string="Disponible"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ======================================================= -->
+    <!-- VUE FORM                                                  -->
+    <!-- ======================================================= -->
+    <record id="library_book_view_form" model="ir.ui.view">
+        <field name="name">library.book.form</field>
+        <field name="model">library.book</field>
+        <field name="arch" type="xml">
+            <form string="Livre">
+                <sheet>
+
+                    <!-- Smart buttons -->
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button"
+                                type="action"
+                                name="%(library_loan_action)d"
+                                icon="fa-list-alt"
+                                context="{'default_book_id': active_id}">
+                            <field name="loan_ids"
+                                   widget="statinfo"
+                                   string="Emprunt(s)"/>
+                        </button>
+                    </div>
+
+                    <!-- Couverture du livre -->
+                    <field name="cover_image"
+                           widget="image"
+                           class="oe_avatar"/>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="title"
+                                   placeholder="Titre du livre..."/>
+                        </h1>
+                        <h4>
+                            <field name="author_id"
+                                   placeholder="Auteur..."/>
+                        </h4>
+                    </div>
+
+                    <group>
+                        <group string="Informations générales">
+                            <field name="isbn"/>
+                            <field name="category_id"/>
+                            <field name="language"/>
+                            <field name="publisher"/>
+                            <field name="publish_date"/>
+                            <field name="pages"/>
+                        </group>
+                        <group string="Stock">
+                            <field name="total_copies"/>
+                            <field name="borrowed_copies"
+                                   readonly="1"/>
+                            <field name="available_copies"
+                                   readonly="1"/>
+                            <field name="is_available"
+                                   widget="boolean_toggle"
+                                   readonly="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Résumé">
+                            <field name="description"
+                                   placeholder="Résumé du livre..."/>
+                        </page>
+
+                        <page string="Historique des emprunts">
+                            <field name="loan_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="member_id"/>
+                                    <field name="loan_date"/>
+                                    <field name="expected_return_date"/>
+                                    <field name="return_date"/>
+                                    <field name="state"
+                                           widget="badge"
+                                           decoration-success="state == 'returned'"
+                                           decoration-warning="state == 'overdue'"
+                                           decoration-info="state == 'borrowed'"
+                                           decoration-muted="state == 'cancelled'"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+
+                <!-- Chatter -->
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ======================================================= -->
+    <!-- VUE KANBAN                                               -->
+    <!-- ======================================================= -->
+    <record id="library_book_view_kanban" model="ir.ui.view">
+        <field name="name">library.book.kanban</field>
+        <field name="model">library.book</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile">
+                <!-- Champs nécessaires au kanban -->
+                <field name="title"/>
+                <field name="author_id"/>
+                <field name="cover_image"/>
+                <field name="is_available"/>
+                <field name="available_copies"/>
+
+                <templates>
+                    <t t-name="card">
+                        <!-- Image de couverture -->
+                        <div class="o_kanban_image">
+                            <img t-att-src="kanban_image(
+                                    'library.book',
+                                    'cover_image',
+                                    record.id.raw_value)"
+                                 alt="Couverture"/>
+                        </div>
+
+                        <div class="oe_kanban_details">
+                            <strong>
+                                <field name="title"/>
+                            </strong>
+                            <div>
+                                <field name="author_id"/>
+                            </div>
+                            <div>
+                                <!-- Badge disponibilité -->
+                                <span t-if="record.is_available.raw_value"
+                                      class="badge bg-success">
+                                    Disponible
+                                </span>
+                                <span t-else=""
+                                      class="badge bg-danger">
+                                    Indisponible
+                                </span>
+                            </div>
+                            <div>
+                                <field name="available_copies"/>
+                                exemplaire(s) disponible(s)
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ======================================================= -->
+    <!-- VUE SEARCH                                               -->
+    <!-- ======================================================= -->
+    <record id="library_book_view_search" model="ir.ui.view">
+        <field name="name">library.book.search</field>
+        <field name="model">library.book</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher un livre">
+
+                <!-- Champs de recherche -->
+                <field name="title"/>
+                <field name="author_id"/>
+                <field name="isbn"/>
+                <field name="category_id"/>
+
+                <!-- Filtres prédéfinis -->
+                <separator/>
+                <filter string="Disponibles"
+                        name="available"
+                        domain="[('is_available', '=', True)]"/>
+                <filter string="Indisponibles"
+                        name="unavailable"
+                        domain="[('is_available', '=', False)]"/>
+
+                <!-- Groupes -->
+                <separator/>
+                <group string="Regrouper par">
+                    <filter string="Catégorie"
+                            name="group_category"
+                            context="{'group_by': 'category_id'}"/>
+                    <filter string="Auteur"
+                            name="group_author"
+                            context="{'group_by': 'author_id'}"/>
+                    <filter string="Langue"
+                            name="group_language"
+                            context="{'group_by': 'language'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ======================================================= -->
+    <!-- ACTION                                                    -->
+    <!-- ======================================================= -->
+    <record id="library_book_action" model="ir.actions.act_window">
+        <field name="name">Livres</field>
+        <field name="res_model">library.book</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id"
+               ref="library_book_view_search"/>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucun livre trouvé
+            </p>
+            <p>
+                Commencez par ajouter votre premier livre !
+            </p>
+        </field>
+    </record>
+
 </odoo>

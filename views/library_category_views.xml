@@ -1,3 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
+    <!-- ======================================================= -->
+    <!-- VUE LIST                                                  -->
+    <!-- ======================================================= -->
+    <record id="library_category_view_list" model="ir.ui.view">
+        <field name="name">library.category.list</field>
+        <field name="model">library.category</field>
+        <field name="arch" type="xml">
+            <list string="Catégories">
+                <field name="name"/>
+                <field name="parent_id"/>
+                <field name="book_count"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ======================================================= -->
+    <!-- VUE FORM                                                  -->
+    <!-- ======================================================= -->
+    <record id="library_category_view_form" model="ir.ui.view">
+        <field name="name">library.category.form</field>
+        <field name="model">library.category</field>
+        <field name="arch" type="xml">
+            <form string="Catégorie">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"
+                                   placeholder="Nom de la catégorie..."/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="parent_id"/>
+                            <field name="book_count"/>
+                        </group>
+                    </group>
+
+                    <group string="Description">
+                        <field name="description"
+                               nolabel="1"
+                               placeholder="Description de la catégorie..."/>
+                    </group>
+
+                    <!-- Sous-catégories -->
+                    <notebook>
+                        <page string="Sous-catégories">
+                            <field name="child_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="book_count"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ======================================================= -->
+    <!-- ACTION                                                    -->
+    <!-- ======================================================= -->
+    <record id="library_category_action" model="ir.actions.act_window">
+        <field name="name">Catégories</field>
+        <field name="res_model">library.category</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
 </odoo>

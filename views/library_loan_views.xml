@@ -1,3 +1,242 @@
+<!-- library_management/views/library_loan_views.xml -->
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
+    <!-- ======================================================= -->
+    <!-- VUE LIST                                                  -->
+    <!-- ======================================================= -->
+    <record id="library_loan_view_list" model="ir.ui.view">
+        <field name="name">library.loan.list</field>
+        <field name="model">library.loan</field>
+        <field name="arch" type="xml">
+            <list string="Emprunts"
+                  decoration-danger="state == 'overdue'"
+                  decoration-success="state == 'returned'"
+                  decoration-info="state == 'borrowed'"
+                  decoration-muted="state == 'cancelled'">
+
+                <field name="name"/>
+                <field name="member_id"/>
+                <field name="book_id"/>
+                <field name="loan_date"/>
+                <field name="expected_return_date"/>
+                <field name="return_date"/>
+                <field name="delay_days"/>
+                <field name="fine_amount"/>
+                <field name="state"
+                       widget="badge"
+                       decoration-success="state == 'returned'"
+                       decoration-warning="state == 'overdue'"
+                       decoration-info="state == 'borrowed'"
+                       decoration-muted="state in ('draft','cancelled')"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ======================================================= -->
+    <!-- VUE FORM                                                  -->
+    <!-- ======================================================= -->
+    <record id="library_loan_view_form" model="ir.ui.view">
+        <field name="name">library.loan.form</field>
+        <field name="model">library.loan</field>
+        <field name="arch" type="xml">
+            <form string="Emprunt">
+
+                <!-- HEADER avec boutons et barre de statut -->
+                <header>
+
+                    <!-- Bouton Confirmer : visible seulement en brouillon -->
+                    <button string="Confirmer l'emprunt"
+                            name="action_confirm"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'draft'"/>
+
+                    <!-- Bouton Retourner : visible si emprunté ou en retard -->
+                    <button string="Retourner le livre"
+                            name="action_return"
+                            type="object"
+                            class="btn-success"
+                            invisible="state not in ('borrowed', 'overdue')"/>
+
+                    <!-- Bouton Renouveler : visible si emprunté -->
+                    <button string="Renouveler"
+                            name="action_renew_wizard"
+                            type="object"
+                            invisible="state != 'borrowed'"/>
+
+                    <!-- Bouton Annuler -->
+                    <button string="Annuler"
+                            name="action_cancel"
+                            type="object"
+                            class="btn-danger"
+                            invisible="state in ('returned', 'cancelled')"/>
+
+                    <!-- Bouton Remettre en brouillon -->
+                    <button string="Remettre en brouillon"
+                            name="action_reset_draft"
+                            type="object"
+                            invisible="state != 'cancelled'"/>
+
+                    <!-- Barre de statut -->
+                    <field name="state"
+                           widget="statusbar"
+                           statusbar_visible="draft,borrowed,returned"/>
+                </header>
+
+                <sheet>
+                    <!-- Alerte retard -->
+                    <div class="alert alert-danger"
+                         role="alert"
+                         invisible="not is_overdue">
+                        ⚠️ Cet emprunt est en retard de
+                        <field name="delay_days" readonly="1"/> jour(s) !
+                        Amende : <field name="fine_amount" readonly="1"/> FCFA
+                    </div>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Informations principales">
+                            <field name="member_id"
+                                   readonly="state != 'draft'"/>
+                            <field name="book_id"
+                                   readonly="state != 'draft'"/>
+                            <field name="renewal_count"
+                                   readonly="1"/>
+                        </group>
+                        <group string="Dates">
+                            <field name="loan_date"
+                                   readonly="state != 'draft'"/>
+                            <field name="expected_return_date"
+                                   readonly="state != 'draft'"/>
+                            <field name="return_date"
+                                   readonly="1"/>
+                            <field name="loan_duration"
+                                   readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Amende" invisible="delay_days == 0">
+                        <group>
+                            <field name="delay_days" readonly="1"/>
+                            <field name="fine_amount" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Notes">
+                            <field name="notes"
+                                   placeholder="Notes sur l'emprunt..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ======================================================= -->
+    <!-- VUE KANBAN                                               -->
+    <!-- ======================================================= -->
+    <record id="library_loan_view_kanban" model="ir.ui.view">
+        <field name="name">library.loan.kanban</field>
+        <field name="model">library.loan</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state">
+                <field name="name"/>
+                <field name="member_id"/>
+                <field name="book_id"/>
+                <field name="state"/>
+                <field name="expected_return_date"/>
+                <field name="is_overdue"/>
+
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_details">
+                            <strong>
+                                <field name="name"/>
+                            </strong>
+                            <div>📚 <field name="book_id"/></div>
+                            <div>👤 <field name="member_id"/></div>
+                            <div>📅 <field name="expected_return_date"/></div>
+                            <div t-if="record.is_overdue.raw_value"
+                                 class="text-danger">
+                                ⚠️ En retard !
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ======================================================= -->
+    <!-- VUE SEARCH                                               -->
+    <!-- ======================================================= -->
+    <record id="library_loan_view_search" model="ir.ui.view">
+        <field name="name">library.loan.search</field>
+        <field name="model">library.loan</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher un emprunt">
+
+                <field name="name"/>
+                <field name="member_id"/>
+                <field name="book_id"/>
+
+                <separator/>
+                <filter string="En cours"
+                        name="borrowed"
+                        domain="[('state', '=', 'borrowed')]"/>
+                <filter string="En retard"
+                        name="overdue"
+                        domain="[('state', '=', 'overdue')]"/>
+                <filter string="Retournés"
+                        name="returned"
+                        domain="[('state', '=', 'returned')]"/>
+                <filter string="Mes emprunts"
+                        name="my_loans"
+                        domain="[('member_id', '=', uid)]"/>
+
+                <separator/>
+                <group string="Regrouper par">
+                    <filter string="Statut"
+                            name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Membre"
+                            name="group_member"
+                            context="{'group_by': 'member_id'}"/>
+                    <filter string="Livre"
+                            name="group_book"
+                            context="{'group_by': 'book_id'}"/>
+                    <filter string="Date d'emprunt"
+                            name="group_loan_date"
+                            context="{'group_by': 'loan_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ======================================================= -->
+    <!-- ACTION                                                    -->
+    <!-- ======================================================= -->
+    <record id="library_loan_action" model="ir.actions.act_window">
+        <field name="name">Emprunts</field>
+        <field name="res_model">library.loan</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="library_loan_view_search"/>
+        <field name="context">{'search_default_borrowed': 1}</field>
+        <!-- search_default_borrowed : filtre "En cours" activé par défaut -->
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucun emprunt trouvé
+            </p>
+        </field>
+    </record>
+
 </odoo>

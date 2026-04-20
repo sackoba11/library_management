@@ -1,3 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
+    <!-- ======================================================= -->
+    <!-- VUE LIST                                                  -->
+    <!-- ======================================================= -->
+    <record id="library_author_view_list" model="ir.ui.view">
+        <field name="name">library.author.list</field>
+        <field name="model">library.author</field>
+        <field name="arch" type="xml">
+            <list string="Auteurs">
+                <field name="name"/>
+                <field name="nationality"/>
+                <field name="birth_date"/>
+                <field name="book_count"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ======================================================= -->
+    <!-- VUE FORM                                                  -->
+    <!-- ======================================================= -->
+    <record id="library_author_view_form" model="ir.ui.view">
+        <field name="name">library.author.form</field>
+        <field name="model">library.author</field>
+        <field name="arch" type="xml">
+            <form string="Auteur">
+                <sheet>
+
+                    <!-- Smart button : nombre de livres -->
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button"
+                                type="action"
+                                name="%(library_book_action)s"
+                                icon="fa-book">
+                            <field name="book_count"
+                                   widget="statinfo"
+                                   string="Livre(s)"/>
+                        </button>
+                    </div>
+
+                    <!-- Photo de l'auteur -->
+                    <field name="photo"
+                           widget="image"
+                           class="oe_avatar"/>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"
+                                   placeholder="Nom de l'auteur..."/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Informations">
+                            <field name="nationality"/>
+                            <field name="birth_date"/>
+                            <field name="death_date"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Biographie">
+                            <field name="biography"/>
+                        </page>
+
+                        <page string="Livres">
+                            <field name="book_ids">
+                                <list>
+                                    <field name="title"/>
+                                    <field name="category_id"/>
+                                    <field name="publish_date"/>
+                                    <field name="available_copies"/>
+                                    <field name="is_available"
+                                           widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ======================================================= -->
+    <!-- ACTION                                                    -->
+    <!-- ======================================================= -->
+    <record id="library_author_action" model="ir.actions.act_window">
+        <field name="name">Auteurs</field>
+        <field name="res_model">library.author</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
 </odoo>

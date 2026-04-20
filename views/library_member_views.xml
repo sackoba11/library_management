@@ -1,3 +1,128 @@
+<!-- library_management/views/library_member_views.xml -->
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
+    <!-- ======================================================= -->
+    <!-- VUE LIST                                                  -->
+    <!-- ======================================================= -->
+    <record id="library_member_view_list" model="ir.ui.view">
+        <field name="name">library.member.list</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <list string="Membres"
+                  decoration-warning="membership_state == 'expired'"
+                  decoration-danger="membership_state == 'suspended'"
+                  decoration-success="membership_state == 'active'">
+
+                <field name="name"/>
+                <field name="member_number"/>
+                <field name="mobile"/>
+                <field name="email"/>
+                <field name="membership_start"/>
+                <field name="membership_expiry"/>
+                <field name="active_loan_count"/>
+                <field name="overdue_loan_count"/>
+                <field name="membership_state"
+                       widget="badge"
+                       decoration-success="membership_state == 'active'"
+                       decoration-warning="membership_state == 'expired'"
+                       decoration-danger="membership_state == 'suspended'"
+                       decoration-muted="membership_state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ======================================================= -->
+    <!-- VUE FORM (héritage de res.partner)                       -->
+    <!-- ======================================================= -->
+    <record id="library_member_view_form" model="ir.ui.view">
+        <field name="name">library.member.form</field>
+        <field name="model">res.partner</field>
+
+        <!-- On hérite de la vue form existante de res.partner -->
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+
+            <!-- On ajoute un smart button après les boutons existants -->
+            <div name="button_box" position="inside">
+                <button class="oe_stat_button"
+                        type="action"
+                        name="%(library_loan_action)d"
+                        icon="fa-book"
+                        invisible="not is_library_member"
+                        context="{'default_member_id': active_id,
+                                  'search_default_member_id': active_id}">
+                    <div class="o_stat_info">
+                        <field name="active_loan_count"
+                               class="o_stat_value"/>
+                        <span class="o_stat_text">Emprunt(s)</span>
+                    </div>
+                </button>
+            </div>
+
+            <!-- On ajoute un onglet "Bibliothèque" après le dernier onglet -->
+            <page name="sale_purchase" position="after">
+                <page string="Bibliothèque"
+                      invisible="not is_library_member">
+                    <group>
+                        <group string="Adhésion">
+                            <field name="is_library_member"
+                                   widget="boolean_toggle"/>
+                            <field name="member_number" readonly="1"/>
+                            <field name="membership_state"
+                                   widget="badge"
+                                   decoration-success="membership_state == 'active'"
+                                   decoration-warning="membership_state == 'expired'"
+                                   decoration-danger="membership_state == 'suspended'"/>
+                            <field name="membership_start"/>
+                            <field name="membership_expiry"/>
+                            <field name="max_loans"/>
+                        </group>
+                        <group string="Statistiques">
+                            <field name="active_loan_count" readonly="1"/>
+                            <field name="total_loan_count" readonly="1"/>
+                            <field name="overdue_loan_count" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Notes">
+                        <field name="member_notes" nolabel="1"/>
+                    </group>
+
+                    <group string="Historique des emprunts">
+                        <field name="loan_ids" nolabel="1">
+                            <list>
+                                <field name="name"/>
+                                <field name="book_id"/>
+                                <field name="loan_date"/>
+                                <field name="expected_return_date"/>
+                                <field name="state" widget="badge"
+                                       decoration-success="state == 'returned'"
+                                       decoration-warning="state == 'overdue'"
+                                       decoration-info="state == 'borrowed'"/>
+                            </list>
+                        </field>
+                    </group>
+                </page>
+            </page>
+        </field>
+    </record>
+
+    <!-- ======================================================= -->
+    <!-- ACTION                                                    -->
+    <!-- ======================================================= -->
+    <record id="library_member_action" model="ir.actions.act_window">
+        <field name="name">Membres</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">list,form</field>
+        <!-- Filtre : afficher uniquement les membres -->
+        <field name="domain">[('is_library_member', '=', True)]</field>
+        <field name="view_ids"
+               eval="[(5, 0, 0),
+                      (0, 0, {'view_mode': 'list',
+                              'view_id': ref('library_member_view_list')}),
+                      (0, 0, {'view_mode': 'form',
+                              'view_id': ref('library_member_view_form')})]"/>
+    </record>
+
 </odoo>
