@@ -31,6 +31,7 @@
         'security/ir.model.access.csv',
 
         # Data
+        'data/library_data.xml',
         'data/library_cron.xml',
 
         # Views

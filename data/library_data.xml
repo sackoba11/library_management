@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Séquence pour les numéros de membre -->
+    <record id="seq_library_member" model="ir.sequence">
+        <field name="name">Numéro de membre bibliothèque</field>
+        <field name="code">library.member</field>
+        <field name="prefix">MBR-</field>
+        <field name="padding">4</field>
+        <!-- Génère : MBR-0001, MBR-0002, MBR-0003... -->
+    </record>
+
+    <!-- Séquence référence emprunt -->
+    <record id="seq_library_loan" model="ir.sequence">
+        <field name="name">Référence emprunt bibliothèque</field>
+        <field name="code">library.loan</field>
+        <field name="prefix">LN-</field>
+        <field name="padding">5</field>
+        <!-- Génère : LN-00001, LN-00002... -->
+    </record>
+
+</odoo>
