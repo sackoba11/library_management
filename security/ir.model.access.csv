@@ -1,1 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_library_category,library.category,model_library_category,,1,1,1,1
+access_library_author,library.author,model_library_author,,1,1,1,1
+access_library_book,library.book,model_library_book,,1,1,1,1
+access_library_loan,library.loan,model_library_loan,,1,1,1,1

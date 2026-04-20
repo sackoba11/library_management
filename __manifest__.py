@@ -43,11 +43,11 @@
         'views/library_menus.xml',
 
         # Wizard
-        'wizard/library_loan_renew_views.xml',
+        # 'wizard/library_loan_renew_views.xml',
 
         # Reports
-        'report/library_loan_report.xml',
-        'report/library_loan_report_template.xml',
+        # 'report/library_loan_report.xml',
+        # 'report/library_loan_report_template.xml',
     ],
     'demo': [],
     'installable': True,
