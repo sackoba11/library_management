@@ -59,23 +59,26 @@
                             invisible="state not in ('borrowed', 'overdue')"/>
 
                     <!-- Bouton Renouveler : visible si emprunté -->
-                    <!-- <button string="Renouveler"
+                    <button string="Renouveler"
                             name="action_renew_wizard"
                             type="object"
-                            invisible="state != 'borrowed'"/> -->
+                            class="btn-warning"
+                            invisible="state != 'borrowed'"/>
 
                     <!-- Bouton Annuler -->
                     <button string="Annuler"
                             name="action_cancel"
                             type="object"
                             class="btn-danger"
-                            invisible="state in ('returned', 'cancelled')"/>
+                            invisible="state in ('returned', 'cancelled')"
+                            groups="library_management.group_library_librarian"/>
 
                     <!-- Bouton Remettre en brouillon -->
                     <button string="Remettre en brouillon"
                             name="action_reset_draft"
                             type="object"
-                            invisible="state != 'cancelled'"/>
+                            invisible="state != 'cancelled'"
+                            groups="library_management.group_library_manager"/>
 
                     <!-- Barre de statut -->
                     <field name="state"

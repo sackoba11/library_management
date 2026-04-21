@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ====================================================== -->
+    <!-- CATÉGORIES                                             -->
+    <!-- ====================================================== -->
+
+    <record id="cat_roman" model="library.category">
+        <field name="name">Roman</field>
+        <field name="description">Romans classiques et contemporains</field>
+    </record>
+
+    <record id="cat_scifi" model="library.category">
+        <field name="name">Science-Fiction</field>
+        <field name="description">Univers futuristes et dystopies</field>
+    </record>
+
+    <record id="cat_fantasy" model="library.category">
+        <field name="name">Fantasy</field>
+        <field name="description">Magie et mondes imaginaires</field>
+    </record>
+
+    <record id="cat_finance" model="library.category">
+        <field name="name">Finance</field>
+        <field name="description">Argent et investissement</field>
+    </record>
+
+    <record id="cat_devperso" model="library.category">
+        <field name="name">Développement Personnel</field>
+        <field name="description">Mindset et réussite</field>
+    </record>
+
+
+    <!-- ====================================================== -->
+    <!-- AUTEURS                                                -->
+    <!-- ====================================================== -->
+
+    <record id="author_saintex" model="library.author">
+        <field name="name">Antoine de Saint-Exupéry</field>
+        <field name="nationality">Française</field>
+        <field name="birth_date">1900-06-29</field>
+        <field name="death_date">1944-07-31</field>
+    </record>
+
+    <record id="author_camus" model="library.author">
+        <field name="name">Albert Camus</field>
+        <field name="nationality">Française</field>
+        <field name="birth_date">1913-11-07</field>
+        <field name="death_date">1960-01-04</field>
+    </record>
+
+    <record id="author_hugo" model="library.author">
+        <field name="name">Victor Hugo</field>
+        <field name="nationality">Française</field>
+        <field name="birth_date">1802-02-26</field>
+        <field name="death_date">1885-05-22</field>
+    </record>
+
+    <record id="author_orwell" model="library.author">
+        <field name="name">George Orwell</field>
+        <field name="nationality">Britannique</field>
+        <field name="birth_date">1903-06-25</field>
+        <field name="death_date">1950-01-21</field>
+    </record>
+
+    <record id="author_rowling" model="library.author">
+        <field name="name">J.K. Rowling</field>
+        <field name="nationality">Britannique</field>
+        <field name="birth_date">1965-07-31</field>
+    </record>
+
+    <record id="author_brown" model="library.author">
+        <field name="name">Dan Brown</field>
+        <field name="nationality">Américaine</field>
+        <field name="birth_date">1964-06-22</field>
+    </record>
+
+    <record id="author_hill" model="library.author">
+        <field name="name">Napoleon Hill</field>
+        <field name="nationality">Américaine</field>
+        <field name="birth_date">1883-10-26</field>
+        <field name="death_date">1970-11-08</field>
+    </record>
+
+    <record id="author_kiyosaki" model="library.author">
+        <field name="name">Robert Kiyosaki</field>
+        <field name="nationality">Américaine</field>
+        <field name="birth_date">1947-04-08</field>
+    </record>
+
+
+    <!-- ====================================================== -->
+    <!-- LIVRES                                                 -->
+    <!-- ====================================================== -->
+
+    <record id="book_petit_prince" model="library.book">
+        <field name="title">Le Petit Prince</field>
+        <field name="isbn">9782070612758</field>
+        <field name="author_id" ref="author_saintex"/>
+        <field name="category_id" ref="cat_roman"/>
+        <field name="language">fr</field>
+        <field name="publisher">Gallimard</field>
+        <field name="publish_date">1943-04-06</field>
+        <field name="pages">96</field>
+        <field name="total_copies">5</field>
+    </record>
+
+    <record id="book_etranger" model="library.book">
+        <field name="title">L'Étranger</field>
+        <field name="isbn">9782070360024</field>
+        <field name="author_id" ref="author_camus"/>
+        <field name="category_id" ref="cat_roman"/>
+        <field name="language">fr</field>
+        <field name="publisher">Gallimard</field>
+        <field name="publish_date">1942-05-19</field>
+        <field name="pages">185</field>
+        <field name="total_copies">4</field>
+    </record>
+
+    <record id="book_peste" model="library.book">
+        <field name="title">La Peste</field>
+        <field name="isbn">9782070360420</field>
+        <field name="author_id" ref="author_camus"/>
+        <field name="category_id" ref="cat_roman"/>
+        <field name="language">fr</field>
+        <field name="publisher">Gallimard</field>
+        <field name="publish_date">1947-06-10</field>
+        <field name="pages">308</field>
+        <field name="total_copies">3</field>
+    </record>
+
+    <record id="book_miserables" model="library.book">
+        <field name="title">Les Misérables</field>
+        <field name="isbn">9782253096344</field>
+        <field name="author_id" ref="author_hugo"/>
+        <field name="category_id" ref="cat_roman"/>
+        <field name="language">fr</field>
+        <field name="publisher">Le Livre de Poche</field>
+        <field name="publish_date">1862-01-01</field>
+        <field name="pages">1460</field>
+        <field name="total_copies">3</field>
+    </record>
+
+    <record id="book_1984" model="library.book">
+        <field name="title">1984</field>
+        <field name="isbn">9780451524935</field>
+        <field name="author_id" ref="author_orwell"/>
+        <field name="category_id" ref="cat_scifi"/>
+        <field name="language">en</field>
+        <field name="publisher">Signet Classics</field>
+        <field name="publish_date">1949-06-08</field>
+        <field name="pages">328</field>
+        <field name="total_copies">6</field>
+    </record>
+
+    <record id="book_animal_farm" model="library.book">
+        <field name="title">Animal Farm</field>
+        <field name="isbn">9780451526342</field>
+        <field name="author_id" ref="author_orwell"/>
+        <field name="category_id" ref="cat_scifi"/>
+        <field name="language">en</field>
+        <field name="publisher">Signet Classics</field>
+        <field name="publish_date">1945-08-17</field>
+        <field name="pages">112</field>
+        <field name="total_copies">5</field>
+    </record>
+
+    <record id="book_hp1" model="library.book">
+        <field name="title">Harry Potter and the Philosopher Stone</field>
+        <field name="isbn">9780747532699</field>
+        <field name="author_id" ref="author_rowling"/>
+        <field name="category_id" ref="cat_fantasy"/>
+        <field name="language">en</field>
+        <field name="publisher">Bloomsbury</field>
+        <field name="publish_date">1997-06-26</field>
+        <field name="pages">223</field>
+        <field name="total_copies">10</field>
+    </record>
+
+    <record id="book_davinci" model="library.book">
+        <field name="title">Da Vinci Code</field>
+        <field name="isbn">9780307474278</field>
+        <field name="author_id" ref="author_brown"/>
+        <field name="category_id" ref="cat_roman"/>
+        <field name="language">en</field>
+        <field name="publisher">Doubleday</field>
+        <field name="publish_date">2003-03-18</field>
+        <field name="pages">454</field>
+        <field name="total_copies">7</field>
+    </record>
+
+    <record id="book_thinkgrowrich" model="library.book">
+        <field name="title">Think and Grow Rich</field>
+        <field name="isbn">9781585424337</field>
+        <field name="author_id" ref="author_hill"/>
+        <field name="category_id" ref="cat_devperso"/>
+        <field name="language">en</field>
+        <field name="publisher">Tarcher</field>
+        <field name="publish_date">1937-01-01</field>
+        <field name="pages">320</field>
+        <field name="total_copies">4</field>
+    </record>
+
+    <record id="book_richdad" model="library.book">
+        <field name="title">Rich Dad Poor Dad</field>
+        <field name="isbn">9781612680194</field>
+        <field name="author_id" ref="author_kiyosaki"/>
+        <field name="category_id" ref="cat_finance"/>
+        <field name="language">en</field>
+        <field name="publisher">Plata Publishing</field>
+        <field name="publish_date">1997-04-01</field>
+        <field name="pages">336</field>
+        <field name="total_copies">5</field>
+    </record>
+
+</odoo>

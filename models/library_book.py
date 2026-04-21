@@ -6,6 +6,7 @@ class LibraryBook(models.Model):
     _name = 'library.book'
     _description = 'Livre'
     _order = 'title asc'
+    _rec_name = 'title'
     _inherit = ['mail.thread', 'mail.activity.mixin']  # Active le chatter
     
     # ============================================================
@@ -163,10 +164,18 @@ class LibraryBook(models.Model):
     # MÉTHODES UTILITAIRES
     # ============================================================
     
-    def name_get(self):
-        """Personnalise l'affichage du livre dans les listes déroulantes"""
-        result = []
-        for book in self:
-            name = f"[{book.isbn}] {book.title}" if book.isbn else book.title
-            result.append((book.id, name))
-        return result
+    # def name_get()(self):
+    #     """Personnalise l'affichage du livre dans les listes déroulantes"""
+    #     result = []
+    #     for book in self:
+    #         name = f"[{book.isbn}] {book.title}" if book.isbn else book.title
+    #         result.append((book.id, name))
+    #     return result
+
+    @api.depends('title', 'isbn')
+    def _compute_display_name(self):
+        for rec in self:
+            if rec.isbn:
+                rec.display_name = f"[{rec.isbn}] {rec.title}"
+            else:
+                rec.display_name = rec.title

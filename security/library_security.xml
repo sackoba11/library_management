@@ -1,3 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
+    <!-- ======================================================= -->
+    <!-- CATÉGORIE DE SÉCURITÉ                                    -->
+    <!-- ======================================================= -->
+    <!--
+        La catégorie regroupe les groupes dans l'interface
+        de gestion des utilisateurs
+    -->
+    <record id="module_library_category" model="ir.module.category">
+        <field name="name">Bibliothèque</field>
+        <field name="description">
+            Gestion des droits d'accès de la bibliothèque
+        </field>
+        <field name="sequence">20</field>
+    </record>
+
+    <!-- ======================================================= -->
+    <!-- GROUPES D'UTILISATEURS                                   -->
+    <!-- ======================================================= -->
+
+    <!-- Groupe 1 : Membre -->
+    <record id="group_library_member" model="res.groups">
+        <field name="name">Membre</field>
+        <field name="category_id"
+               ref="module_library_category"/>
+        <field name="comment">
+            Peut consulter le catalogue et voir ses propres emprunts
+        </field>
+    </record>
+
+    <!-- Groupe 2 : Bibliothécaire -->
+    <record id="group_library_librarian" model="res.groups">
+        <field name="name">Bibliothécaire</field>
+        <field name="category_id"
+               ref="module_library_category"/>
+        <!-- Inclut automatiquement les droits du groupe Membre -->
+        <field name="implied_ids"
+               eval="[(4, ref('group_library_member'))]"/>
+        <field name="comment">
+            Gère les livres, membres et emprunts
+        </field>
+    </record>
+
+    <!-- Groupe 3 : Manager -->
+    <record id="group_library_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <field name="category_id"
+               ref="module_library_category"/>
+        <!-- Manager inclut les droits du Bibliothécaire -->
+        <field name="implied_ids"
+               eval="[(4, ref('group_library_librarian'))]"/>
+        <field name="users"
+               eval="[(4, ref('base.user_admin'))]"/>
+        <!-- L'admin est automatiquement Manager -->
+    </record>
+
+    <!-- ======================================================= -->
+    <!-- RÈGLES D'ENREGISTREMENT (ir.rule)                        -->
+    <!-- ======================================================= -->
+    <!--
+        Ces règles définissent QUELS enregistrements
+        un utilisateur peut voir/modifier
+    -->
+
+    <!-- Règle 1 : Un membre ne voit que SES emprunts -->
+    <record id="rule_loan_member" model="ir.rule">
+        <field name="name">Emprunts : accès membre</field>
+        <field name="model_id" ref="model_library_loan"/>
+        <field name="groups"
+               eval="[(4, ref('group_library_member'))]"/>
+        <!--
+            domain_force : filtre appliqué automatiquement
+            user._uid = l'ID de l'utilisateur connecté
+        -->
+        <field name="domain_force">
+            [('member_id.user_ids', 'in', [user.id])]
+        </field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Règle 2 : Bibliothécaire voit tous les emprunts -->
+    <record id="rule_loan_librarian" model="ir.rule">
+        <field name="name">Emprunts : accès bibliothécaire</field>
+        <field name="model_id" ref="model_library_loan"/>
+        <field name="groups"
+               eval="[(4, ref('group_library_librarian'))]"/>
+        <!-- domain_force vide = accès à tout -->
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Règle 3 : Manager accès total aux emprunts -->
+    <record id="rule_loan_manager" model="ir.rule">
+        <field name="name">Emprunts : accès manager</field>
+        <field name="model_id" ref="model_library_loan"/>
+        <field name="groups"
+               eval="[(4, ref('group_library_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
 </odoo>

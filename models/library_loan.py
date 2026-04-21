@@ -113,6 +113,7 @@ class LibraryLoan(models.Model):
         compute='_compute_fine',
         store=True,
         digits=(10, 0),     # 10 chiffres, 0 décimales
+        groups='library_management.group_library_librarian',
     )
 
     # Est-ce en retard ?
@@ -323,6 +324,24 @@ class LibraryLoan(models.Model):
             loan.state = 'draft'
             loan.return_date = False
 
+    def action_renew_wizard(self):
+        """Ouvre le wizard de renouvellement"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': "Renouveler l'emprunt",
+            'res_model': 'library.loan.renew',
+            'view_mode': 'form',
+            'target': 'new',
+            # On passe l'ID de l'emprunt dans le contexte
+            # Le wizard le récupère via active_id
+            'context': {
+                'default_loan_id': self.id,
+                'active_id': self.id,
+                'active_ids': self.ids,
+                'active_model': 'library.loan',
+            },
+        }
     # ============================================================
     # MÉTHODE APPELÉE PAR LE CRON (étape 11)
     # ============================================================

@@ -71,8 +71,7 @@
             <!-- Onglet Bibliothèque -->
             <xpath expr="//notebook" position="inside">
 
-                <page string="Bibliothèque"
-                      invisible="not is_library_member">
+                <page string="Bibliothèque">
 
                     <group>
                         <group string="Adhésion">

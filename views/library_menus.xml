@@ -51,14 +51,17 @@
         name="Membres"
         parent="library_menu_root"
         action="library_member_action"
-        sequence="4"/>
+        sequence="4"
+        groups="library_management.group_library_librarian"
+        />
 
     <!-- Menu Configuration (conteneur sans action) -->
     <menuitem
         id="library_menu_config"
         name="Configuration"
         parent="library_menu_root"
-        sequence="10"/>
+        sequence="10"
+        groups="library_management.group_library_librarian"/>
         <!-- Pas d'action → c'est un conteneur pour les sous-menus -->
 
     <!-- ======================================================= -->
