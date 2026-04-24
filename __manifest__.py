@@ -34,6 +34,10 @@
         'data/library_data.xml',
         'data/library_cron.xml',
 
+        # Reports
+        'report/library_loan_report.xml',
+        
+
         # Views
         'views/library_category_views.xml',
         'views/library_loan_views.xml',
@@ -45,9 +49,8 @@
         # Wizard
         'wizard/library_loan_renew_views.xml',
 
-        # Reports
-        # 'report/library_loan_report.xml',
-        # 'report/library_loan_report_template.xml',
+        'report/library_loan_report_template.xml',
+        
     ],
     'demo': ['demo/library_demo.xml'],
     'installable': True,

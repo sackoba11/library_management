@@ -84,6 +84,12 @@
                     <field name="state"
                            widget="statusbar"
                            statusbar_visible="draft,borrowed,returned"/>
+                    
+                           <!-- Bouton Imprimer -->
+                    <button string="🖨️ Imprimer la fiche"
+                            type="action"
+                            name="%(library_management.library_loan_report)d"
+                            invisible="state == 'draft'"/>
                 </header>
 
                 <sheet>

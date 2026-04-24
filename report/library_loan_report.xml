@@ -1,3 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
+    <!-- ======================================================= -->
+    <!-- DÉCLARATION DU RAPPORT FICHE D'EMPRUNT                  -->
+    <!-- ======================================================= -->
+    <record id="library_loan_report" model="ir.actions.report">
+
+        <!-- Nom affiché dans le bouton Imprimer -->
+        <field name="name">Fiche d'emprunt</field>
+
+        <!-- Modèle source des données -->
+        <field name="model">library.loan</field>
+
+        <!-- Type : qweb-pdf génère un PDF -->
+        <field name="report_type">qweb-pdf</field>
+
+        <!--
+            Nom technique du template QWeb
+            Format : module_name.template_id
+        -->
+        <field name="report_name">
+            library_management.report_library_loan_template
+        </field>
+
+        <!-- Nom du fichier PDF généré -->
+        <field name="report_file">
+            library_management.report_library_loan_template
+        </field>
+
+        <!-- Orientation de la page -->
+        <field name="print_report_name">
+            'Fiche_Emprunt_' + object.name
+        </field>
+        <!--
+            object = l'enregistrement en cours
+            Génère : Fiche_Emprunt_LN-00001.pdf
+        -->
+
+        <!-- Afficher dans le menu Imprimer ? -->
+        <field name="binding_model_id" ref="model_library_loan"/>
+        <!--
+            binding_model_id : ajoute automatiquement
+            ce rapport dans le bouton "Imprimer" de la vue
+        -->
+
+    </record>
+
+    <!-- ======================================================= -->
+    <!-- RAPPORT LISTE DES EMPRUNTS EN RETARD                    -->
+    <!-- ======================================================= -->
+    <record id="library_overdue_report" model="ir.actions.report">
+        <field name="name">Rapport des retards</field>
+        <field name="model">library.loan</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">
+            library_management.report_library_overdue_template
+        </field>
+        <field name="report_file">
+            library_management.report_library_overdue_template
+        </field>
+        <field name="print_report_name">
+            'Rapport_Retards_' + (context_timestamp(datetime.datetime.now()).strftime('%d-%m-%Y'))
+        </field>
+        <field name="binding_model_id" ref="model_library_loan"/>
+    </record>
+
 </odoo>
