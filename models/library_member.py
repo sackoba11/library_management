@@ -139,8 +139,8 @@ class LibraryMember(models.Model):
             # Emprunts en retard
             overdue = loans.filtered(
                 lambda l: l.state == 'borrowed' 
-                and l.return_date 
-                and l.return_date < today
+                and l.expected_return_date 
+                and l.expected_return_date < today or l.state == 'overdue'
             )
             member.overdue_loan_count = len(overdue)
     

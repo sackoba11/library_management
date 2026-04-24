@@ -32,10 +32,11 @@
 
         # Data
         'data/library_data.xml',
+        'data/library_mail_templates.xml',
         'data/library_cron.xml',
+        
 
-        # Reports
-        'report/library_loan_report.xml',
+        
         
 
         # Views
@@ -49,6 +50,8 @@
         # Wizard
         'wizard/library_loan_renew_views.xml',
 
+        # Reports
+        'report/library_loan_report.xml',
         'report/library_loan_report_template.xml',
         
     ],

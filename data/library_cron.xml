@@ -1,3 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
+    <!-- ======================================================= -->
+    <!-- CRON 1 : VÉRIFICATION QUOTIDIENNE DES RETARDS           -->
+    <!-- ======================================================= -->
+    <record id="ir_cron_check_overdue_loans"
+            model="ir.cron">
+
+        <!-- Nom affiché dans la liste des tâches planifiées -->
+        <field name="name">
+            Bibliothèque : Vérification des emprunts en retard
+        </field>
+
+        <!--
+            Le modèle qui contient la méthode à appeler
+            Format : model_NOM_DU_MODELE
+        -->
+        <field name="model_id"
+               ref="model_library_loan"/>
+
+        <!-- Méthode Python à appeler -->
+         <field name="state">code</field>
+        <field name="code">
+            model._check_overdue_loans()
+        </field>
+
+        <!-- Actif dès l'installation -->
+        <field name="active" eval="True"/>
+
+        <!-- Intervalle : tous les 1 jour -->
+        <field name="interval_number" eval="1"/>
+        <field name="interval_type">days</field>
+        <!--
+            interval_type options :
+            minutes, hours, days, weeks, months
+        -->
+
+        <!-- Nombre d'exécutions (0 = illimité) -->
+        <!-- <field name="numbercall" eval="-1"/> -->
+
+        <!-- Exécuter même si en retard -->
+        <!-- <field name="doall" eval="False"/> -->
+
+        <!-- Priorité (plus petit = plus prioritaire) -->
+        <field name="priority" eval="5"/>
+
+    </record>
+
+    <!-- ======================================================= -->
+    <!-- CRON 2 : RAPPEL AVANT ÉCHÉANCE (3 jours avant)         -->
+    <!-- ======================================================= -->
+    <record id="ir_cron_send_reminder_loans"
+            model="ir.cron">
+        <field name="name">
+            Bibliothèque : Envoi des rappels d'échéance
+        </field>
+        <field name="model_id" ref="model_library_loan"/>
+        <field name="state">code</field>
+        <field name="code">
+            model._send_due_date_reminders()
+        </field>
+        <field name="active" eval="True"/>
+        <field name="interval_number" eval="1"/>
+        <field name="interval_type">days</field>
+        <!-- <field name="numbercall" eval="-1"/> -->
+        <!-- <field name="doall" eval="False"/> -->
+        <field name="priority" eval="10"/>
+    </record>
+
 </odoo>

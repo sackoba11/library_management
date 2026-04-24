@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ======================================================= -->
+    <!-- TEMPLATE 1 : CONFIRMATION D'EMPRUNT                     -->
+    <!-- ======================================================= -->
+    <record id="email_template_loan_confirm"
+            model="mail.template">
+
+        <field name="name">
+            Bibliothèque : Confirmation d'emprunt
+        </field>
+
+        <!-- Modèle source -->
+        <field name="model_id" ref="model_library_loan"/>
+
+        <!-- Destinataire : l'email du membre -->
+        <field name="email_to">
+            {{object.member_id.email}}
+        </field>
+
+        <!-- Expéditeur -->
+        <field name="email_from">
+            {{user.email}}
+        </field>
+
+        <!-- Objet de l'email -->
+        <field name="subject">
+            Confirmation d'emprunt - {{object.name}}
+        </field>
+
+        <!--
+            Corps de l'email en HTML
+            ${object.XXX} = accès aux champs de l'enregistrement
+            ${user.XXX}   = accès aux champs de l'utilisateur connecté
+        -->
+        <field name="body_html" type="html">
+            <div style="font-family: Arial, sans-serif;
+                        max-width: 600px;
+                        margin: 0 auto;">
+
+                <!-- En-tête -->
+                <div style="background-color: #2c7be5;
+                            color: white;
+                            padding: 20px;
+                            text-align: center;">
+                    <h2>📚 Bibliothèque Coopérative</h2>
+                    <h3>Confirmation d'emprunt</h3>
+                </div>
+
+                <!-- Corps -->
+                <div style="padding: 20px; background-color: #f8f9fa;">
+
+                    <p>Bonjour <strong> <t t-out="object.member_id.name"/></strong>,</p>
+
+                    <p>
+                        Votre emprunt a bien été enregistré.
+                        Voici le récapitulatif :
+                    </p>
+
+                    <!-- Tableau récapitulatif -->
+                    <table style="width: 100%;
+                                  border-collapse: collapse;
+                                  margin: 20px 0;">
+                        <tr style="background-color: #e9ecef;">
+                            <td style="padding: 10px;
+                                       border: 1px solid #dee2e6;">
+                                <strong>Référence</strong>
+                            </td>
+                            <td style="padding: 10px;
+                                       border: 1px solid #dee2e6;">
+                                 <t t-out="object.name"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;
+                                       border: 1px solid #dee2e6;">
+                                <strong>Livre</strong>
+                            </td>
+                            <td style="padding: 10px;
+                                       border: 1px solid #dee2e6;">
+                            <t t-out="object.book_id.title"/>
+                            </td>
+                        </tr>
+                        <tr style="background-color: #e9ecef;">
+                            <td style="padding: 10px;
+                                       border: 1px solid #dee2e6;">
+                                <strong>Date d'emprunt</strong>
+                            </td>
+                            <td style="padding: 10px;
+                                       border: 1px solid #dee2e6;">
+                                 <t t-out="object.loan_date"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;
+                                       border: 1px solid #dee2e6;">
+                                <strong>Date de retour prévue</strong>
+                            </td>
+                            <td style="padding: 10px;
+                                       border: 1px solid #dee2e6;">
+                                <strong style="color: #e74c3c;">
+                                     <t t-out="object.expected_return_date"/>
+                                </strong>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- Avertissement -->
+                    <div style="background-color: #fff3cd;
+                                border: 1px solid #ffc107;
+                                padding: 15px;
+                                border-radius: 5px;
+                                margin: 20px 0;">
+                        <strong>⚠️ Important :</strong>
+                        Pensez à retourner votre livre avant le
+                        <strong> <t t-out="object.expected_return_date"/></strong>.
+                        Un retard entraîne une amende de
+                        <strong>100 FCFA par jour</strong>.
+                    </div>
+
+                    <p>
+                        Cordialement,<br/>
+                        <strong>L'équipe de la Bibliothèque</strong>
+                    </p>
+                </div>
+
+                <!-- Pied de page -->
+                <div style="background-color: #343a40;
+                            color: #adb5bd;
+                            padding: 15px;
+                            text-align: center;
+                            font-size: 12px;">
+                    Cet email a été envoyé automatiquement.
+                    Merci de ne pas y répondre.
+                </div>
+            </div>
+        </field>
+
+        <!-- Langue automatique selon le membre -->
+        <field name="lang">{{ object.member_id.lang or 'fr_FR' }}</field>
+
+        <!-- Rapport PDF joint automatiquement -->
+        <field name="report_template_ids"
+               eval="[(4, ref('library_loan_report'))]"/>
+
+    </record>
+
+    <!-- ======================================================= -->
+    <!-- TEMPLATE 2 : NOTIFICATION DE RETARD                     -->
+    <!-- ======================================================= -->
+    <record id="email_template_loan_overdue"
+            model="mail.template">
+
+        <field name="name">
+            Bibliothèque : Notification de retard
+        </field>
+        <field name="model_id" ref="model_library_loan"/>
+        <field name="email_to">
+            {{object.member_id.email}}
+        </field>
+        <field name="email_from">
+            {{user.email}}
+        </field>
+        <field name="subject">
+            ⚠️ Emprunt en retard - {{object.name}} - Action requise
+        </field>
+        <field name="body_html" type="html">
+            <div style="font-family: Arial, sans-serif;
+                        max-width: 600px;
+                        margin: 0 auto;">
+
+                <div style="background-color: #dc3545;
+                            color: white;
+                            padding: 20px;
+                            text-align: center;">
+                    <h2>⚠️ EMPRUNT EN RETARD</h2>
+                    <h3>Action requise</h3>
+                </div>
+
+                <div style="padding: 20px;">
+
+                    <p>
+                        Bonjour
+                        <strong><t t-out="object.member_id.name"/></strong>,
+                    </p>
+
+                    <p style="color: #dc3545; font-size: 16px;">
+                        <strong>
+                            Votre emprunt est en retard de
+                            <t t-out="object.delay_days"/> jour(s).
+                        </strong>
+                    </p>
+
+                    <table style="width: 100%;
+                                  border-collapse: collapse;
+                                  margin: 20px 0;">
+                        <tr style="background-color: #f8d7da;">
+                            <td style="padding: 10px;
+                                       border: 1px solid #f5c6cb;">
+                                <strong>Livre</strong>
+                            </td>
+                            <td style="padding: 10px;
+                                       border: 1px solid #f5c6cb;">
+                                <t t-out="object.book_id.title"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;
+                                       border: 1px solid #dee2e6;">
+                                <strong>Date de retour prévue</strong>
+                            </td>
+                            <td style="padding: 10px;
+                                       border: 1px solid #dee2e6;">
+                                <t t-out="object.expected_return_date"/>
+                            </td>
+                        </tr>
+                        <tr style="background-color: #f8d7da;">
+                            <td style="padding: 10px;
+                                       border: 1px solid #f5c6cb;">
+                                <strong>Jours de retard</strong>
+                            </td>
+                            <td style="padding: 10px;
+                                       border: 1px solid #f5c6cb;
+                                       color: #dc3545;
+                                       font-weight: bold;">
+                                <t t-out="object.delay_days"/> jours
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;
+                                       border: 1px solid #dee2e6;">
+                                <strong>Amende actuelle</strong>
+                            </td>
+                            <td style="padding: 10px;
+                                       border: 1px solid #dee2e6;
+                                       color: #dc3545;
+                                       font-weight: bold;">
+                               <t t-out="object.fine_amount"/>  FCFA
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div style="background-color: #f8d7da;
+                                border: 1px solid #dc3545;
+                                padding: 15px;
+                                border-radius: 5px;">
+                        <strong>Veuillez retourner ce livre
+                        dès que possible</strong> pour éviter
+                        que l'amende continue d'augmenter
+                        (100 FCFA par jour supplémentaire).
+                    </div>
+
+                    <p style="margin-top: 20px;">
+                        Cordialement,<br/>
+                        <strong>L'équipe de la Bibliothèque</strong>
+                    </p>
+                </div>
+            </div>
+        </field>
+        <field name="lang">{{ object.member_id.lang or 'fr_FR' }}</field>
+    </record>
+
+    <!-- ======================================================= -->
+    <!-- TEMPLATE 3 : RAPPEL AVANT ÉCHÉANCE                      -->
+    <!-- ======================================================= -->
+    <record id="email_template_loan_reminder"
+            model="mail.template">
+        <field name="name">
+            Bibliothèque : Rappel d'échéance
+        </field>
+        <field name="model_id" ref="model_library_loan"/>
+        <field name="email_to">
+            {{object.member_id.email}}
+        </field>
+        <field name="email_from">
+            {{user.email}}
+        </field>
+        <field name="subject">
+            📅 Rappel : retour prévu dans 3 jours - {{object.name}}
+        </field>
+        <field name="body_html" type="html">
+            <div style="font-family: Arial, sans-serif;
+                        max-width: 600px;">
+                <div style="background-color: #ffc107;
+                            padding: 20px;
+                            text-align: center;">
+                    <h2>📅 Rappel d'échéance</h2>
+                </div>
+                <div style="padding: 20px;">
+                    <p>
+                        Bonjour
+                        <strong> <t t-out="object.member_id.name"/></strong>,
+                    </p>
+                    <p>
+                        Votre emprunt arrive à échéance dans
+                        <strong>3 jours</strong>.
+                    </p>
+                    <p>
+                        📚 Livre :
+                        <strong> <t t-out="object.book_id.title"/></strong><br/>
+                        📅 Date de retour :
+                        <strong> <t t-out="object.expected_return_date"/></strong>
+                    </p>
+                    <p>
+                        Pensez à le retourner ou à demander
+                        un renouvellement à temps.
+                    </p>
+                </div>
+            </div>
+        </field>
+    </record>
+
+</odoo>

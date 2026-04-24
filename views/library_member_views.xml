@@ -45,7 +45,7 @@
             <!-- Smart button -->
             <xpath expr="//div[@name='button_box']" position="inside">
 
-                <button class="oe_stat_button"
+                <!-- <button class="oe_stat_button"
                         type="action"
                         name="%(library_loan_action)d"
                         icon="fa-book"
@@ -63,10 +63,54 @@
                         </span>
                     </div>
 
+                </button> -->
+                 <!-- Nombre d'emprunts actifs -->
+                <button class="oe_stat_button"
+                        type="action"
+                        name="%(library_loan_action)d"
+                        icon="fa-book"
+                        invisible="not is_library_member"
+                        context="{
+                                'default_member_id': id,
+                                'search_default_member_id': id,
+                                'search_default_borrowed': 1}">
+                    <div class="o_stat_info">
+                        <field name="active_loan_count"
+                            class="o_stat_value"/>
+                        <span class="o_stat_text">En cours</span>
+                    </div>
+                </button>
+                <!-- Nombre d'emprunts en retard -->
+                <button class="oe_stat_button"
+                        type="action"
+                        name="%(library_loan_action)d"
+                        icon="fa-warning"
+                        invisible="overdue_loan_count == 0"
+                        context="{'default_member_id': id,
+                                'search_default_member_id': id,
+                                'search_default_overdue': 1}">
+                    <div class="o_stat_info text-danger">
+                        <field name="overdue_loan_count"
+                            class="o_stat_value"/>
+                        <span class="o_stat_text">En retard</span>
+                    </div>
                 </button>
 
+                <!-- Total des emprunts -->
+                <button class="oe_stat_button"
+                        type="action"
+                        name="%(library_loan_action)d"
+                        icon="fa-history"
+                        invisible="not is_library_member"
+                        context="{'default_member_id': id,
+                                'search_default_member_id': id}">
+                    <div class="o_stat_info">
+                        <field name="total_loan_count"
+                            class="o_stat_value"/>
+                        <span class="o_stat_text">Total</span>
+                    </div>
+                </button>
             </xpath>
-
 
             <!-- Onglet Bibliothèque -->
             <xpath expr="//notebook" position="inside">

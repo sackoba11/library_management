@@ -342,34 +342,126 @@ class LibraryLoan(models.Model):
                 'active_model': 'library.loan',
             },
         }
+
     # ============================================================
-    # MÉTHODE APPELÉE PAR LE CRON (étape 11)
+    # MÉTHODES APPELÉES PAR LES CRONS
     # ============================================================
 
     @api.model
     def _check_overdue_loans(self):
-        """Passe les emprunts en retard au statut 'overdue'
-        Appelée automatiquement par le cron job"""
+        """
+        CRON 1 : Vérification quotidienne des retards
+        → Passe les emprunts en retard au statut 'overdue'
+        → Envoie un email de notification
+        """
         today = date.today()
 
-        # Chercher tous les emprunts actifs dont la date est dépassée
+        # Chercher tous les emprunts actifs en retard
         overdue_loans = self.search([
             ('state', '=', 'borrowed'),
             ('expected_return_date', '<', today),
         ])
 
-        if overdue_loans:
-            overdue_loans.write({'state': 'overdue'})
+        if not overdue_loans:
+            return  # Rien à faire
 
-            # Notifier chaque membre
-            for loan in overdue_loans:
+        # Récupérer le template email
+        template = self.env.ref(
+            'library_management.email_template_loan_overdue',
+            raise_if_not_found=False
+        )
+
+        for loan in overdue_loans:
+            # 1. Changer le statut
+            loan.state = 'overdue'
+
+            # 2. Envoyer l'email si template disponible
+            #    et si le membre a un email
+            if template and loan.member_id.email:
+                template.send_mail(
+                    loan.id,
+                    force_send=True,    # Envoie immédiatement
+                    raise_exception=False,  # Ne plante pas si erreur email
+                )
+
+            # 3. Message dans le chatter
+            loan.message_post(
+                body=(
+                    f"⚠️ Emprunt passé en retard automatiquement.<br/>"
+                    f"Retard : <b>{loan.delay_days} jour(s)</b><br/>"
+                    f"Amende : <b>{loan.fine_amount} FCFA</b><br/>"
+                    f"Email de notification envoyé à "
+                    f"<b>{loan.member_id.email}</b>"
+                ),
+                subtype_xmlid='mail.mt_note',
+            )
+
+    @api.model
+    def _send_due_date_reminders(self):
+        """
+        CRON 2 : Rappel 3 jours avant l'échéance
+        → Envoie un email de rappel aux membres
+        dont le retour est prévu dans 3 jours
+        """
+        from datetime import timedelta
+        today = date.today()
+        reminder_date = today + timedelta(days=3)
+
+        # Chercher les emprunts dont l'échéance est dans 3 jours
+        loans_due_soon = self.search([
+            ('state', '=', 'borrowed'),
+            ('expected_return_date', '=', reminder_date),
+        ])
+
+        if not loans_due_soon:
+            return
+
+        template = self.env.ref(
+            'library_management.email_template_loan_reminder',
+            raise_if_not_found=False
+        )
+
+        for loan in loans_due_soon:
+            if template and loan.member_id.email:
+                template.send_mail(
+                    loan.id,
+                    force_send=True,
+                    raise_exception=False,
+                )
                 loan.message_post(
                     body=(
-                        f"⚠️ Cet emprunt est en retard de "
-                        f"<b>{loan.delay_days} jour(s)</b>. "
-                        f"Amende actuelle : <b>{loan.fine_amount} FCFA</b>"
-                    )
+                        f"📅 Rappel envoyé à "
+                        f"<b>{loan.member_id.email}</b> — "
+                        f"Retour prévu le "
+                        f"<b>{loan.expected_return_date}</b>"
+                    ),
+                    subtype_xmlid='mail.mt_note',
                 )
+
+    # ============================================================
+    # ENVOI EMAIL À LA CONFIRMATION (Override action_confirm)
+    # ============================================================
+
+    def action_confirm_email(self):
+        """Override pour envoyer l'email de confirmation"""
+        # Appel de la méthode parente
+        result = super().action_confirm()
+
+        # Envoyer l'email de confirmation
+        template = self.env.ref(
+            'library_management.email_template_loan_confirm',
+            raise_if_not_found=False
+        )
+
+        for loan in self:
+            if template and loan.member_id.email:
+                template.send_mail(
+                    loan.id,
+                    force_send=True,
+                    raise_exception=False,
+                )
+
+        return result
 
     # ============================================================
     # OVERRIDE CREATE
